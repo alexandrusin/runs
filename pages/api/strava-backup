@@ -1,0 +1,192 @@
+import { NextApiRequest, NextApiResponse } from 'next';
+import { supabase } from '@/utils/supabaseClient';
+
+// Environment variables for Strava API credentials
+const clientID = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID || '';
+const clientSecret = process.env.NEXT_PUBLIC_STRAVA_CLIENT_SECRET || '';
+const refreshToken = process.env.NEXT_PUBLIC_STRAVA_REFRESH_TOKEN || '';
+
+// Strava API endpoints
+const refreshTokenUrl = 'https://www.strava.com/oauth/token';
+const activitiesUrl = 'https://www.strava.com/api/v3/athlete/activities';
+
+export interface Activity {
+  id: number;
+  name: string;
+  start_date: Date;
+  type: string;
+  distance: number;
+  moving_time: number;
+  elapsed_time: number;
+  total_elevation_gain: number;
+  average_speed: number;
+  max_speed: number;
+  average_heartrate: number;
+  max_heartrate: number;
+  suffer_score: number;
+  location_country: string;
+  timezone: string;
+
+  average_cadence?: number;
+  average_temp?: number;
+  average_watts?: number;
+  max_watts?: number;
+  weighted_average_watts?: number;
+  device_watts?: boolean;
+}
+
+// Function to refresh the access token
+async function refreshAccessToken() {
+  const params = new URLSearchParams({
+    client_id: clientID,
+    client_secret: clientSecret,
+    refresh_token: refreshToken,
+    grant_type: 'refresh_token',
+  });
+
+  const response = await fetch(refreshTokenUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: params.toString(),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to refresh access token');
+  }
+
+  const data = await response.json();
+  return data.access_token;
+}
+
+const mapStravaToSupabaseActivity = (stravaActivity: any) => {
+  // Common fields for all activities
+  const activity: Activity = {
+    id: stravaActivity.id,
+    name: stravaActivity.name,
+    start_date: new Date(stravaActivity.start_date),
+    type: stravaActivity.type,
+    distance: stravaActivity.distance,
+    moving_time: stravaActivity.moving_time,
+    elapsed_time: stravaActivity.elapsed_time,
+    total_elevation_gain: stravaActivity.total_elevation_gain,
+    average_speed: stravaActivity.average_speed,
+    max_speed: stravaActivity.max_speed,
+    average_heartrate: stravaActivity.average_heartrate,
+    max_heartrate: stravaActivity.max_heartrate,
+    suffer_score: stravaActivity.suffer_score,
+    location_country: stravaActivity.location_country,
+    timezone: stravaActivity.timezone,
+
+    average_cadence: stravaActivity.average_cadence || undefined,
+    average_temp: stravaActivity.average_temp || undefined,
+
+    average_watts: stravaActivity.average_watts || undefined,
+    max_watts: stravaActivity.max_watts || undefined,
+    weighted_average_watts: stravaActivity.weighted_average_watts || undefined,
+    device_watts: stravaActivity.device_watts || undefined,
+  };
+
+  return activity;
+};
+
+
+
+// Function to sync activities to Supabase
+const syncActivitiesToSupabase = async (stravaActivities: any[]) => {
+  const errors: string[] = [];
+
+  for (const stravaActivity of stravaActivities) {
+    const activity = mapStravaToSupabaseActivity(stravaActivity);
+
+    // Upsert the general activity data
+    const { error: activityError } = await supabase
+      .from('activities')
+      .upsert(activity);
+
+    if (activityError) {
+      console.error(`Error inserting activity ${activity.id}:`, activityError.message);
+      errors.push(`Activity ${activity.id}: ${activityError.message}`);
+    }
+  }
+
+  return errors;
+};
+
+
+
+// API route handler
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const accessToken = await refreshAccessToken();  // Make sure this function is defined and working
+
+    const stravaResponse = await fetch(`${activitiesUrl}?access_token=${accessToken}&per_page=10`);
+    if (!stravaResponse.ok) {
+      throw new Error('Failed to fetch activities from Strava');
+    } 
+
+    // Fetch all activities from 2015 to now
+    const activitiesFrom2015 = await fetchAllActivitiesFrom2015(accessToken);
+
+    // Parse the JSON response from Strava
+    const stravaActivities: any[] = await stravaResponse.json();
+
+    // Log the data from Strava API to the console
+    // console.log('Data from Strava API:', stravaActivities);
+
+    // Continue with processing and syncing the data...
+    const syncErrors = await syncActivitiesToSupabase(stravaActivities);
+
+    if (syncErrors.length > 0) {
+      return res.status(500).json({ message: 'Some activities failed to sync', details: syncErrors });
+    }
+
+    res.status(200).json({ message: 'A lot of activities fetched and synced successfully' });
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error', details: error.message });
+  }
+}
+
+
+const fetchActivities = async (accessToken: string, after: number, before: number, page: number = 1, perPage: number = 30): Promise<StravaActivity[]> => {
+  const url = new URL('https://www.strava.com/api/v3/athlete/activities');
+  url.searchParams.append('access_token', accessToken);
+  url.searchParams.append('after', after.toString());
+  url.searchParams.append('before', before.toString());
+  url.searchParams.append('page', page.toString());
+  url.searchParams.append('per_page', perPage.toString());
+
+  const response = await fetch(url.toString(), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    // Handle response errors, such as rate limiting or invalid tokens
+    throw new Error(`Failed to fetch activities: ${response.statusText}`);
+  }
+
+  const activities: Activity[] = await response.json();
+  return activities;
+};
+
+const fetchAllActivitiesFrom2015 = async (accessToken: string) => {
+  const startDate = new Date('2015-01-01T00:00:00Z');
+  const after = Math.floor(startDate.getTime() / 1000); // Convert to UNIX timestamp
+  const before = Math.floor(Date.now() / 1000); // Current UNIX timestamp
+
+  let page = 1;
+  let allActivities:any = [];
+  let hasMore = true;
+
+  while (hasMore) {
+    const activities = await fetchActivities(accessToken, after, before, page);
+    allActivities = [...allActivities, ...activities];
+    page++;
+    hasMore = activities.length > 0; // Continue if there are activities
+  }
+
+  return allActivities;
+};

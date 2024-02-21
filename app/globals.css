@@ -105,3 +105,44 @@ a {
     color-scheme: dark;
   }
 }
+
+
+.running-stats {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px;
+}
+.running-stats table {
+  margin-top: 20px;
+  width: 100%;
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+  column-gap: 20px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); 
+  margin: 20px 0;
+  font-size: 12px;
+  color: #999;
+  background: #0b0b0b;
+  border: 1px solid #141414;
+  font-family: var(--font-mono);
+}
+.grid-header {
+  font-weight: bold;
+  padding: 10px;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 10px;
+  color: #444;
+  /* color: rgb(129, 87, 255);
+  color: rgb(196, 87, 255); */
+}
+.grid-item {
+  padding: 10px;
+  text-align: center;
+  border-top: 1px solid #141414;
+}
