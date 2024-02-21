@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { supabase } from '@/utils/supabaseClient'; // Adjust this import path to where your Supabase client is initialized
+import { supabase } from '@/utils/supabaseClient';
+import Image from "next/image";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -276,6 +277,15 @@ const RunningStats = () => {
       <div className="menu">
         <Link href="/running">
           Running
+        </Link>
+        <Link href="/">
+          <Image
+            src="/logo.svg"
+            alt="AS Logo"
+            width={30}
+            height={30}
+            priority
+          />
         </Link>
         <Link href="/active">
           Active
