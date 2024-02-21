@@ -14,6 +14,7 @@ import {
   ChartData,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import Link from 'next/link';
 
 ChartJS.register(
   CategoryScale,
@@ -272,8 +273,16 @@ const RunningStats = () => {
 
   return (
     <main className="running-stats">
-      <Line options={options} data={chartData} />
+      <div className="menu">
+        <Link href="/running">
+          Running
+        </Link>
+        <Link href="/active">
+          Active
+        </Link>
+      </div>
 
+      <Line options={options} data={chartData} />
       <div className="grid-container">
         <div className="grid-header">Year</div>
         <div className="grid-header">Total Distance (km)</div>

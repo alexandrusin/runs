@@ -13,6 +13,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import Link from 'next/link';
 
 ChartJS.register(
   CategoryScale,
@@ -150,6 +151,14 @@ const ActivityGraph = () => {
 
   return (
     <main className="running-stats">
+      <div className="menu">
+        <Link href="/running">
+          Running
+        </Link>
+        <Link href="/cycling">
+          Cycling
+        </Link>
+      </div>
       <Line options={options} data={chartData} />
     </main>
   );

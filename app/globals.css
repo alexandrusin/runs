@@ -138,11 +138,31 @@ a {
   text-transform: uppercase;
   font-size: 10px;
   color: #444;
-  /* color: rgb(129, 87, 255);
-  color: rgb(196, 87, 255); */
+  color: rgb(129, 87, 255);
+  color: rgb(196, 87, 255);
 }
 .grid-item {
   padding: 10px;
   text-align: center;
   border-top: 1px solid #141414;
+}
+
+
+.menu {
+  display: flex;
+  gap: 10px;
+  text-transform: uppercase;
+  padding: 0 0 10px 0;
+  margin: 0 0 10px 0;
+  border-bottom: 1px solid #222;
+  align-items: center;
+  justify-content: center;
+  
+  a {
+    color: #FFF;
+    background: #0b0b0b;
+    border: 1px solid #141414;
+    font-family: var(--font-mono);
+    padding: 5px 10px;
+  }
 }
