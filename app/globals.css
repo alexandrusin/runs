@@ -138,9 +138,8 @@ a {
   text-transform: uppercase;
   font-size: 10px;
   color: #444;
-  color: rgb(129, 87, 255);
-  color: rgb(196, 87, 255);
 }
+
 .grid-item {
   padding: 10px;
   text-align: center;
