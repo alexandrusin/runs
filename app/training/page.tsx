@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabaseClient';
-import Image from "next/image";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +15,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import Link from 'next/link';
+import Loading from '@/components/Loading/Loading';
 
 ChartJS.register(
   CategoryScale,
@@ -147,28 +148,13 @@ const ActivityGraph = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>
+      <Loading className="loading" />
+    </div>;
   }
 
   return (
-    <main className="running-stats">
-      <div className="menu">
-        <Link href="/running">
-          Running
-        </Link>
-        <Link href="/">
-          <Image
-            src="/logo.svg"
-            alt="AS Logo"
-            width={30}
-            height={30}
-            priority
-          />
-        </Link>
-        <Link href="/cycling">
-          Cycling
-        </Link>
-      </div>
+    <main className="page">
       <Line options={options} data={chartData} />
     </main>
   );

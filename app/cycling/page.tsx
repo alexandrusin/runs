@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabaseClient';
-import Image from "next/image";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,7 +15,7 @@ import {
   ChartData,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import Link from 'next/link';
+import Loading from '@/components/Loading/Loading';
 
 ChartJS.register(
   CategoryScale,
@@ -99,7 +99,6 @@ const RunningStats = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const lastYearTotal = runningGraphData.find(data => data.year === (new Date().getFullYear() - 1).toString())?.total_distance || '0';
-  const yearlyGoal = parseFloat(lastYearTotal) * 1.1; // Increase by 10%
 
   useEffect(() => {
     const fetchRunningData = async () => {
@@ -269,29 +268,11 @@ const RunningStats = () => {
     }
   };
   if (loading) {
-    return <div>Loading...</div>;
+    return <div><Loading className="loading" /></div>;
   }
 
   return (
-    <main className="running-stats">
-      <div className="menu">
-        <Link href="/running">
-          Running
-        </Link>
-        <Link href="/">
-          <Image
-            src="/logo.svg"
-            alt="AS Logo"
-            width={30}
-            height={30}
-            priority
-          />
-        </Link>
-        <Link href="/active">
-          Active
-        </Link>
-      </div>
-
+    <main className="page">
       <Line options={options} data={chartData} />
       <div className="grid-container">
         <div className="grid-header">Year</div>

@@ -1,24 +1,19 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import Link from "next/link";
+import Logo from "@/components/Logo/Logo";
 
 export default function Home() {
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
+      {/* <div className={styles.description}>
         <p>
           Hi! I am Alex and this is my playground.
         </p>
-      </div>
+      </div> */}
+      Hi! I am Alex and this is my playground.
       <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/logo.svg"
-          alt="AS Logo"
-          width={400}
-          height={400}
-          priority
-        />
+        <Logo />
       </div>
       <div className={styles.grid}>
         <Link href="/running" className={styles.card}>
