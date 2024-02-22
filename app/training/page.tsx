@@ -45,7 +45,7 @@ type ActivityCount = {
   total_weightTrainingWorkout: number;
 };
 
-const ActivityGraph = () => {
+const TrainingStats = () => {
   const [graphData, setGraphData] = useState<AggregatedData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -118,18 +118,21 @@ const ActivityGraph = () => {
         data: graphData.map((data) => data.total_runs),
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        borderWidth: 2,
       },
       {
         label: 'Rides',
         data: graphData.map((data) => data.total_rideVirtualRide),
         borderColor: 'rgb(54, 162, 235)',
         backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        borderWidth: 2,
       },
       {
         label: 'Strength',
         data: graphData.map((data) => data.total_weightTrainingWorkout),
         borderColor: 'rgb(129, 87, 255)',
         backgroundColor: 'rgba(129, 87, 255, 0.5)',
+        borderWidth: 2,
       },
     ],
   };
@@ -142,22 +145,23 @@ const ActivityGraph = () => {
       },
       title: {
         display: true,
-        text: 'Battle of the Giants',
+        text: 'Workout Procrastination Management',
       },
     },
   };
 
   if (loading) {
     return <div>
-      <Loading className="loading" />
+      <Loading />
     </div>;
   }
 
   return (
     <main className="page">
+      <h1 className="page-title">Battle of the giants for time and energy.</h1>
       <Line options={options} data={chartData} />
     </main>
   );
 };
 
-export default ActivityGraph;
+export default TrainingStats;

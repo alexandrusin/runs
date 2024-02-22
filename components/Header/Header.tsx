@@ -11,9 +11,6 @@ const Header: React.FC = () => {
 
   return (
     <header className="header">
-      <Link href="/" className={isActive('/') ? 'active' : ''}>
-        <Logo className="logo" />
-      </Link>
       <Link href="/running" className={isActive('/running') ? 'active' : ''}>
         Running
       </Link>

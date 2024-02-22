@@ -47,7 +47,7 @@ const options = {
     },
     title: {
       display: true,
-      text: 'Yearly cycling stats',
+      text: 'Virtual Rides included.',
     },    
   },
 };
@@ -88,7 +88,7 @@ const chartOptions = {
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-const RunningStats = () => {
+const CyclingStats = () => {
   const [runningGraphData, setRunningGraphData] = useState<AggregatedData[]>([]);
   const [runningTableData, setRunningTableData] = useState<AggregatedData[]>([]);
   const [optimalPath, setOptimalPath] = useState<number[]>([]);
@@ -208,6 +208,7 @@ const RunningStats = () => {
         data: runningGraphData.map((data) => parseFloat(data.total_distance)),
         borderColor: 'rgb(225, 218, 9)',
         backgroundColor: 'rgba(225, 218, 9, 0.5)',
+        borderWidth: 2,
         yAxisID: 'y-axis-distance'
       },
       {
@@ -215,6 +216,7 @@ const RunningStats = () => {
         data: runningGraphData.map((data) => parseFloat(data.total_runs.toString())),
         borderColor: 'rgb(220, 135, 25)',
         backgroundColor: 'rgba(220, 135, 25, 0.5)',
+        borderWidth: 2,
         yAxisID: 'y-axis-runs'
       }
     ],
@@ -268,11 +270,12 @@ const RunningStats = () => {
     }
   };
   if (loading) {
-    return <div><Loading className="loading" /></div>;
+    return <div><Loading /></div>;
   }
 
   return (
     <main className="page">
+      <h1 className="page-title">Data from hill attacks and city escapes.</h1>
       <Line options={options} data={chartData} />
       <div className="grid-container">
         <div className="grid-header">Year</div>
@@ -306,4 +309,4 @@ const RunningStats = () => {
   );
 };
 
-export default RunningStats;
+export default CyclingStats;

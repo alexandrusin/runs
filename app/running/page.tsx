@@ -269,11 +269,12 @@ const RunningStats = () => {
   };
 
   if (loading) {
-    return <div><Loading className="loading" /></div>;
+    return <div><Loading /></div>;
   }
 
   return (
     <main className="page">
+      <h1 className="page-title">Numbers behind my running adventures.</h1>
       <Line options={options} data={chartData} />
       <div className="grid-container">
         <div className="grid-header">Year</div>
