@@ -53,7 +53,7 @@ const Loading: React.FC<LogoProps> = ({ className }) => {
 
   return (
     <div className={`${className} loading`}>
-      {`${randomMessage}...`}
+      {randomMessage}
     </div>
   );
 };
