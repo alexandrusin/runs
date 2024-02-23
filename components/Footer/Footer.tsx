@@ -9,7 +9,6 @@ const Footer: React.FC = () => {
       <Link href="/">
         <Logo className="logo" />
       </Link>
-      built to learn
     </footer>
   );
 };
