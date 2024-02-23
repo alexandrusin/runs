@@ -102,7 +102,11 @@ const CyclingStats = () => {
 
   useEffect(() => {
     const fetchRunningData = async () => {
+
       setLoading(true);
+      const startTime = Date.now();
+      const minLoadingTime = 1000;
+
       const currentYear = new Date().getFullYear();
       const currentMonth = new Date().getMonth();
       const { data, error } = await supabase
@@ -176,7 +180,14 @@ const CyclingStats = () => {
       });
 
       setProgressDelta(progressDelta);
-      setLoading(false);
+
+      const fetchTime = Date.now() - startTime;
+      const remainingTime = minLoadingTime - fetchTime;
+      if (remainingTime > 0) {
+        setTimeout(() => setLoading(false), remainingTime);
+      } else {
+        setLoading(false);
+      }
     };
 
     fetchRunningData();

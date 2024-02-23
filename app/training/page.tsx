@@ -51,7 +51,11 @@ const TrainingStats = () => {
 
   useEffect(() => {
     const fetchActivities = async () => {
+
       setLoading(true);
+      const startTime = Date.now();
+      const minLoadingTime = 1000;
+
       const { data, error } = await supabase
         .from('activities')
         .select('start_date, type')
@@ -65,7 +69,15 @@ const TrainingStats = () => {
 
       const aggregatedData = aggregateDataByYear(data);
       setGraphData(aggregatedData);
-      setLoading(false);
+      
+      const fetchTime = Date.now() - startTime;
+      const remainingTime = minLoadingTime - fetchTime;
+
+      if (remainingTime > 0) {
+        setTimeout(() => setLoading(false), remainingTime);
+      } else {
+        setLoading(false);
+      }
     };
 
     fetchActivities();
