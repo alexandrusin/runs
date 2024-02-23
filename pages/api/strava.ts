@@ -60,7 +60,9 @@ async function refreshAccessToken() {
 const fetchActivities = async (accessToken: string) => {
   console.log(`Using Access Token: ${accessToken}`); // Log the token being used for the request
 
-  const response = await fetch(`${activitiesUrl}?access_token=${accessToken}&per_page=30`, {
+  console.log("clientID", clientID);
+
+  const response = await fetch(`${activitiesUrl}?access_token=${accessToken}&per_page=10`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -125,6 +127,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const stravaActivities = await fetchActivities(accessToken);
     const mappedActivities = stravaActivities.map(mapStravaToSupabaseActivity);
     const syncErrors = await syncActivitiesToSupabase(mappedActivities);
+
+    console.log("stravaActivities", stravaActivities);
 
     if (syncErrors.length > 0) {
       return res.status(500).json({ message: 'Some activities failed to sync', details: syncErrors });

@@ -129,6 +129,7 @@ a {
   border: 1px solid #141414;
   font-family: var(--font-mono);
 }
+
 .grid-header {
   font-weight: bold;
   padding: 10px;

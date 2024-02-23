@@ -30,6 +30,12 @@ ChartJS.register(
 interface Activity {
   start_date: string;
   type: string;
+  moving_time: number;
+}
+
+interface MonthlyData {
+  month: string;
+  hours: number;
 }
 
 interface AggregatedData {
@@ -37,6 +43,17 @@ interface AggregatedData {
   total_runs: number;
   total_rideVirtualRide: number;
   total_weightTrainingWorkout: number;
+
+  total_hours: number;  
+  hours_runs: number;
+  hours_rideVirtualRide: number;
+  hours_weightTrainingWorkout: number;
+
+  monthlyData: Record<string, MonthlyData>;
+  peakMonth: string;
+  peakHours: number;
+  lowMonth: string;
+  lowHours: number;
 }
 
 type ActivityCount = {
@@ -58,7 +75,7 @@ const TrainingStats = () => {
 
       const { data, error } = await supabase
         .from('activities')
-        .select('start_date, type')
+        .select('start_date, type, moving_time')
         .in('type', ['Run', 'Ride', 'VirtualRide', 'WeightTraining', 'Workout']);
 
       if (error) {
@@ -84,42 +101,72 @@ const TrainingStats = () => {
   }, []);
 
   const aggregateDataByYear = (activities: Activity[]): AggregatedData[] => {
-    const aggregatedData: Record<string, ActivityCount> = {};
+    const aggregatedData: Record<string, AggregatedData> = {};
   
-    activities.forEach(({ start_date, type }: Activity) => {
-      const year = new Date(start_date).getFullYear().toString();
-      const typeGroup = getActivityGroup(type);
+    activities.forEach(({ start_date, type, moving_time }: Activity) => {
+      const date = new Date(start_date);
+      const year = date.getFullYear().toString();
+      const month = date.toLocaleString('default', { month: 'long' });
+      const hours = moving_time / 3600; // Convert seconds to hours
   
       if (!aggregatedData[year]) {
-        aggregatedData[year] = { total_runs: 0, total_rideVirtualRide: 0, total_weightTrainingWorkout: 0 };
+        aggregatedData[year] = {
+          year,
+          total_runs: 0,
+          total_rideVirtualRide: 0,
+          total_weightTrainingWorkout: 0,
+          total_hours: 0,
+          hours_runs: 0,
+          hours_rideVirtualRide: 0,
+          hours_weightTrainingWorkout: 0,
+          monthlyData: {},
+          peakMonth: '',
+          peakHours: 0,
+          lowMonth: '',
+          lowHours: Infinity,
+        };
+      }
+
+      aggregatedData[year].total_hours += hours;
+
+      if (!aggregatedData[year].monthlyData[month]) {
+        aggregatedData[year].monthlyData[month] = { month, hours: 0 };
+      }
+      aggregatedData[year].monthlyData[month].hours += hours;
+  
+      // Update peak month and hours
+      if (aggregatedData[year].monthlyData[month].hours > aggregatedData[year].peakHours) {
+        aggregatedData[year].peakMonth = month;
+        aggregatedData[year].peakHours = aggregatedData[year].monthlyData[month].hours;
       }
   
-      // Using typeGroup as a key is safe because getActivityGroup returns a keyof ActivityCount
-      aggregatedData[year][typeGroup]++;
+      // Update low month and hours
+      if (aggregatedData[year].monthlyData[month].hours < aggregatedData[year].lowHours) {
+        aggregatedData[year].lowMonth = month;
+        aggregatedData[year].lowHours = aggregatedData[year].monthlyData[month].hours;
+      }
+
+  
+      switch (type) {
+        case 'Run':
+          aggregatedData[year].total_runs++;
+          aggregatedData[year].hours_runs += hours;
+          break;
+        case 'Ride':
+        case 'VirtualRide':
+          aggregatedData[year].total_rideVirtualRide++;
+          aggregatedData[year].hours_rideVirtualRide += hours;
+          break;
+        case 'WeightTraining':
+        case 'Workout':
+          aggregatedData[year].total_weightTrainingWorkout++;
+          aggregatedData[year].hours_weightTrainingWorkout += hours;
+          break;
+        // Add more cases as needed for other activity types
+      }
     });
   
-    return Object.entries(aggregatedData).map(([year, data]) => ({
-      year,
-      total_runs: data.total_runs,
-      total_rideVirtualRide: data.total_rideVirtualRide,
-      total_weightTrainingWorkout: data.total_weightTrainingWorkout,
-    }));
-  };
-  
-  const getActivityGroup = (type: string): keyof ActivityCount => {
-    switch (type) {
-      case 'Run':
-        return 'total_runs';
-      case 'Ride':
-      case 'VirtualRide':
-        return 'total_rideVirtualRide';
-      case 'WeightTraining':
-      case 'Workout':
-        return 'total_weightTrainingWorkout';
-      default:
-        // Handle the default case appropriately
-        return 'total_runs';
-    }
+    return Object.values(aggregatedData);
   };
 
   const chartData = {
@@ -157,7 +204,49 @@ const TrainingStats = () => {
       },
       title: {
         display: true,
-        text: 'Workout Procrastination Management',
+        text: 'Workouts Finished',
+      },
+    },
+  };
+
+
+  const totalHoursChartData = {
+    labels: graphData.map((data) => data.year),
+    datasets: [
+      {
+        label: 'Run',
+        data: graphData.map((data) => data.hours_runs),
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        borderWidth: 2,
+      },
+      {
+        label: 'Ride',
+        data: graphData.map((data) => data.hours_rideVirtualRide),
+        borderColor: 'rgb(54, 162, 235)',
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        borderWidth: 2,
+      },
+      {
+        label: 'Strength',
+        data: graphData.map((data) => data.hours_weightTrainingWorkout),
+        borderColor: 'rgb(129, 87, 255)',
+        backgroundColor: 'rgba(129, 87, 255, 0.5)',
+        borderWidth: 2,
+      },
+    ],
+  };
+
+
+  const totalHoursChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'Hours Sweating',
       },
     },
   };
@@ -172,6 +261,19 @@ const TrainingStats = () => {
     <main className="page">
       <h1 className="page-title">Battle of the giants for time and energy.</h1>
       <Line options={options} data={chartData} />
+      <div className="grid-container">
+        <div className="grid-header">Year</div>
+        <div className="grid-header">Total Hours</div>
+        <div className="grid-header">Peak Month</div>
+        {graphData.map((data) => (
+          <React.Fragment key={data.year}>
+            <div className="grid-item">{data.year}</div>
+            <div className="grid-item">{data.total_hours.toFixed(2)}</div>
+            <div className="grid-item">{data.peakMonth}</div>
+          </React.Fragment>
+        ))}
+      </div>
+      <Line options={totalHoursChartOptions} data={totalHoursChartData} />
     </main>
   );
 };
