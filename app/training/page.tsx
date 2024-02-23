@@ -100,6 +100,15 @@ const TrainingStats = () => {
     fetchActivities();
   }, []);
 
+  const initializeMonthlyData = () => {
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const monthlyData: Record<string, MonthlyData> = {};
+    months.forEach(month => {
+      monthlyData[month] = { month, hours: 0 };
+    });
+    return monthlyData;
+  };
+
   const aggregateDataByYear = (activities: Activity[]): AggregatedData[] => {
     const aggregatedData: Record<string, AggregatedData> = {};
   
@@ -119,7 +128,7 @@ const TrainingStats = () => {
           hours_runs: 0,
           hours_rideVirtualRide: 0,
           hours_weightTrainingWorkout: 0,
-          monthlyData: {},
+          monthlyData: initializeMonthlyData(),
           peakMonth: '',
           peakHours: 0,
           lowMonth: '',
@@ -128,24 +137,13 @@ const TrainingStats = () => {
       }
 
       aggregatedData[year].total_hours += hours;
-
-      if (!aggregatedData[year].monthlyData[month]) {
-        aggregatedData[year].monthlyData[month] = { month, hours: 0 };
-      }
       aggregatedData[year].monthlyData[month].hours += hours;
   
       // Update peak month and hours
       if (aggregatedData[year].monthlyData[month].hours > aggregatedData[year].peakHours) {
         aggregatedData[year].peakMonth = month;
         aggregatedData[year].peakHours = aggregatedData[year].monthlyData[month].hours;
-      }
-  
-      // Update low month and hours
-      if (aggregatedData[year].monthlyData[month].hours < aggregatedData[year].lowHours) {
-        aggregatedData[year].lowMonth = month;
-        aggregatedData[year].lowHours = aggregatedData[year].monthlyData[month].hours;
-      }
-
+      }      
   
       switch (type) {
         case 'Run':
@@ -164,6 +162,15 @@ const TrainingStats = () => {
           break;
         // Add more cases as needed for other activity types
       }
+    });
+
+    Object.keys(aggregatedData).forEach(year => {
+      Object.values(aggregatedData[year].monthlyData).forEach(monthData => {
+        if (monthData.hours < aggregatedData[year].lowHours) {
+          aggregatedData[year].lowMonth = monthData.month;
+          aggregatedData[year].lowHours = monthData.hours;
+        }
+      });
     });
   
     return Object.values(aggregatedData);
@@ -261,15 +268,21 @@ const TrainingStats = () => {
     <main className="page">
       <h1 className="page-title">Battle of the giants for time and energy.</h1>
       <Line options={options} data={chartData} />
-      <div className="grid-container">
+      <div className="grid-container col-4">
         <div className="grid-header">Year</div>
-        <div className="grid-header">Total Hours</div>
+        <div className="grid-header">Year Total Hours</div>
         <div className="grid-header">Peak Month</div>
+        <div className="grid-header">Peak Month Hours</div>
+        {/* <div className="grid-header">Low Month</div>
+        <div className="grid-header">Low Hours</div> */}
         {graphData.map((data) => (
           <React.Fragment key={data.year}>
             <div className="grid-item">{data.year}</div>
             <div className="grid-item">{data.total_hours.toFixed(2)}</div>
             <div className="grid-item">{data.peakMonth}</div>
+            <div className="grid-item">{data.peakHours.toFixed(2)}</div>
+            {/* <div className="grid-item">{data.lowMonth}</div>
+            <div className="grid-item">{data.lowHours.toFixed(2)}</div>  */}
           </React.Fragment>
         ))}
       </div>

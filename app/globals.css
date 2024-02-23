@@ -129,6 +129,9 @@ a {
   border: 1px solid #141414;
   font-family: var(--font-mono);
 }
+.grid-container.col-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
 
 .grid-header {
   font-weight: bold;
