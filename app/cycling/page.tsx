@@ -16,6 +16,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import Loading from '@/components/Loading/Loading';
+import Badge from '@/components/Badge/Badge';
 
 ChartJS.register(
   CategoryScale,
@@ -316,6 +317,15 @@ const CyclingStats = () => {
         ))}
       </div>
 
+      <div className="badges-wrapper">
+        <Badge
+          image="/badges/badge-transfagarasan-2023.png"
+          title="Transfăgărășan Challenge 2023"
+          distance="37.15km"
+          time="2:29:36"
+          elevation="1,577m"
+          />
+      </div>
     </main>
   );
 };

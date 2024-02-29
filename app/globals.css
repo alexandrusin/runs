@@ -213,8 +213,6 @@ a {
   font-size: 14px;
 }
 
-
-
 .home-page {
   main {
     display: flex;
@@ -240,4 +238,48 @@ a {
   line-height: 1;
   text-align: center;
   margin: 20px;
+}
+
+.badges-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+@media screen and (max-width: 600px) {  
+  .badges-wrapper {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px;
+  border: 1px solid #141414;
+  background: #0b0b0b;
+
+
+}
+.badge-image {
+}
+.badge-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-transform: uppercase;
+  color: #666;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+.badge-title {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  color: #999;
+  text-align: center;
 }

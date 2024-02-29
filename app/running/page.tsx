@@ -17,6 +17,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import Link from 'next/link';
 import Loading from '@/components/Loading/Loading';
+import Badge from '@/components/Badge/Badge';
 
 ChartJS.register(
   CategoryScale,
@@ -313,6 +314,30 @@ const RunningStats = () => {
             <div className="grid-item">{distance}</div>
           </React.Fragment>
         ))}
+      </div>
+
+      <div className="badges-wrapper">
+        <Badge
+          image="/badges/badge-ecotrail-2023.png"
+          title="Eco Cluj Ultra 2023"
+          distance="50km"
+          time="06:56:17"
+          elevation="1,580m"
+          />
+        <Badge
+          image="/badges/badge-wizz-2023.png"
+          title="WIZZ Cluj Marathon 2023"
+          distance="42.2km"
+          time="04:02:25"
+          elevation="98m"
+          />
+        <Badge
+          image="/badges/badge-wizz-2022.png"
+          title="WIZZ Cluj Marathon 2022"
+          distance="42.2km"
+          time="04:05:57"
+          elevation="98m"
+          />
       </div>
 
     </main>
