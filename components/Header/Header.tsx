@@ -20,6 +20,9 @@ const Header: React.FC = () => {
       <Link href="/training" className={isActive('/training') ? 'active' : ''}>
         Training
       </Link>
+      <Link href="/growingabeard" className={isActive('/growingabeard') ? 'active' : ''}>
+        GrowingABeard
+      </Link>
     </header>
   );
 };

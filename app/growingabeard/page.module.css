@@ -1,0 +1,27 @@
+.page {
+  /* background: #EEE; */
+}
+
+.gallery {
+  --gallery-columns: 5;
+  --gallery-spacing: 10px;
+  display: grid;
+  grid-template-columns: repeat(var(--gallery-columns), 1fr);
+  gap: var(--gallery-spacing);
+  padding: var(--gallery-spacing);
+  /* width: 800px; */
+  margin: 50px auto;
+  /* padding-top: 50px; */
+}
+
+@media screen and (max-width: 600px) {
+  .gallery {
+    --gallery-columns: 3;
+  }
+}
+
+.gallery img {
+  width: 100%;
+  border-radius: 2px;
+  /* opacity: 0.8; */
+}

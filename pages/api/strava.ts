@@ -62,7 +62,7 @@ const fetchActivities = async (accessToken: string) => {
 
   console.log("clientID", clientID);
 
-  const response = await fetch(`${activitiesUrl}?access_token=${accessToken}&per_page=10`, {
+  const response = await fetch(`${activitiesUrl}?access_token=${accessToken}&per_page=50`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

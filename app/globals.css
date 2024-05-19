@@ -265,6 +265,7 @@ a {
 
 }
 .badge-image {
+  padding: 10px;
 }
 .badge-content {
   display: flex;

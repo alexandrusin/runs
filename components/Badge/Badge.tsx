@@ -15,8 +15,8 @@ const Badge: React.FC<BadgeProps> = ({ image, title, distance, elevation, time, 
     <div className="badge">
       <div className="badge-image">
         <Image src={image} alt={title}
-          width={150}
-          height={150} />
+          width={100}
+          height={100} />
       </div>
       <h3 className="badge-title">{title}</h3>
       <div className="badge-content">
