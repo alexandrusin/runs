@@ -1,5 +1,21 @@
 .page {
-  /* background: #EEE; */
+  padding: 10px;
+}
+
+.title {
+  font-size: 11.5vw;
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.8;
+  letter-spacing: -0.5vw;
+  color: #333;
+  max-width: 100%;
+  overflow: hidden;
+}
+@media screen and (max-width: 600px) {
+  .title {
+    font-size: 20vw;
+  }
 }
 
 .gallery {
@@ -8,10 +24,7 @@
   display: grid;
   grid-template-columns: repeat(var(--gallery-columns), 1fr);
   gap: var(--gallery-spacing);
-  padding: var(--gallery-spacing);
-  /* width: 800px; */
-  margin: 50px auto;
-  /* padding-top: 50px; */
+  margin: 10px auto 50px;
 }
 
 @media screen and (max-width: 600px) {
@@ -23,5 +36,41 @@
 .gallery img {
   width: 100%;
   border-radius: 2px;
-  /* opacity: 0.8; */
+}
+
+.photoContainer {
+  position: relative;
+}
+
+.info {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 900;
+  color: #000;
+  text-transform: uppercase;
+  position: absolute;
+  bottom: 10px;
+  left: 5px;
+}
+
+.details,
+.date {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 900;
+  color: #000;
+  text-transform: uppercase;
+
+  position: absolute;
+  left: 10px;
+}
+
+.date {
+  position: absolute;
+  top: 10px;
+}
+
+.details {
+  font-size: 12px;
+  bottom: 10px;
 }

@@ -1,0 +1,59 @@
+.page {
+  padding: 10px;
+}
+
+.background {
+  
+}
+
+.gallery {
+  --gallery-columns: 4;
+  --gallery-spacing: 40px;
+  display: grid;
+  grid-template-columns: repeat(var(--gallery-columns), 1fr);
+  gap: var(--gallery-spacing);
+  margin: 10px auto 50px;
+  width: 800px;
+}
+
+@media screen and (max-width: 600px) {
+  .gallery {
+    --gallery-columns: 3;
+  }
+}
+
+.fishDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.nameWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.latinName {
+  font-style: italic;
+}
+
+.image {
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.age {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  color: #CCC;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.characteristics {
+  color: #999;
+  line-height: 1.2;
+}

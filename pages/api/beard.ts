@@ -10,12 +10,15 @@ type Data = {
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
     try {
         const photosDir = path.join(process.cwd(), 'public', 'beard');
-        const filenames = fs.readdirSync(photosDir);
+        const allFilenames = fs.readdirSync(photosDir);
+
+        // Filter filenames to include only those starting with "beard-"
+        const beardFilenames = allFilenames.filter(name => name.startsWith('beard-'));
 
         // Sort filenames numerically based on the number after "beard-"
-        const sortedFilenames = filenames.sort((a, b) => {
-            const numA = parseInt(a.split('-')[1]); // Assumes format is "beard-XX.jpg"
-            const numB = parseInt(b.split('-')[1]); // Adjust splitting logic if format differs
+        const sortedFilenames = beardFilenames.sort((a, b) => {
+            const numA = parseInt(a.split('-')[1].split('.')[0]); // Adjust to extract number before file extension
+            const numB = parseInt(b.split('-')[1].split('.')[0]);
             return numA - numB;
         });
 

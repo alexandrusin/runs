@@ -1,46 +1,87 @@
-"use client"
+'use client';
 
-import { useEffect, useState } from 'react';
-import styles from "./page.module.css";
+import { useState } from 'react';
+import Image from 'next/image';
+import styles from './page.module.css';
 
-type PhotoData = {
-    photos: string[] | null;
-    error?: string;
+type Photo = {
+	src: string;
+	details?: string;
+	date?: string;
 };
 
+const photoData: Photo[] = [
+	{
+		src: '/beard/beard-1.jpg',
+		details: 'Naive.',
+		date: '17 Mar 2024',
+	},
+	{
+    src: '/beard/beard-2.jpg'
+  },
+	{ src: '/beard/beard-3.jpg',
+    date: '3 Apr 2024' },
+	{ src: '/beard/beard-4.jpg' },
+	{
+    src: '/beard/beard-5.jpg',
+    details: 'Itchy & Scratchy', },
+	{
+    src: '/beard/beard-6.jpg',
+    date: '1 Month'
+  },
+	{ src: '/beard/beard-7.jpg' },
+	{
+		src: '/beard/beard-8.jpg',
+		details: 'First contact with a barber.',
+		date: '25 Apr 2024',
+	},
+	{ src: '/beard/beard-9.jpg' },
+	{
+    src: '/beard/beard-10.jpg',
+    date: '2 May 2024', },
+	{ src: '/beard/beard-11.jpg' },
+	{ src: '/beard/beard-12.jpg' },
+	{
+    src: '/beard/beard-13.jpg',
+    details: 'Wild.', },
+	{
+		src: '/beard/beard-14.jpg',
+		details: 'Trying to regain control.',
+		date: '2 Months',
+	},
+	{
+    src: '/beard/beard-15.jpg',
+    details: 'Didn\'t', },
+];
+
 export default function Home() {
-    const [photos, setPhotos] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
+	const [photos] = useState<Photo[]>(photoData);
 
-    useEffect(() => {
-        fetch('/api/beard')
-            .then(response => response.json())
-            .then((data: PhotoData) => {
-                // console.log("API data:", data);
-                if (data.photos) {
-                    setPhotos(data.photos);
-                    // console.log("Photos loaded:", data.photos);
-                } else {
-                    // console.log("No photos or error:", data.error);
-                }
-                setLoading(false);
-            })
-            .catch(error => {
-                console.error("Fetching photos failed:", error);
-                setLoading(false);
-            });
-    }, []);
-
-    if (loading) return <p>Loading...</p>;
-    if (!photos.length) return <p>No photos found.</p>; // Display a message if no photos
-
-    return (
-      <div className={styles.page}>
-        <div className={styles.gallery}>
-          {photos.map(photo => (
-              <img key={photo} src={photo} alt="Photo" />
-          ))}
-        </div>
-      </div>
-    );
+	return (
+		<div className={styles.page}>
+      <div className={styles.title}>Bearded Diaries</div>
+			<div className={styles.gallery}>
+				{photos.map((photo) => (
+					<div key={photo.src} className={styles.photoContainer}>
+						<Image
+							src={photo.src}
+							alt="Beard photo"
+							layout="responsive"
+							width={615}
+							height={800}
+							className={styles.image}
+						/>
+            
+              {photo.date && (
+                <p className={styles.date}>{photo.date}</p>
+              )}
+              {photo.details && (
+                <p className={styles.details}>{photo.details}</p>
+              )}
+              
+					</div>
+				))}
+			</div>
+		</div>
+	);
 }
