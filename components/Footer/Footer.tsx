@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="footer">
-      <Link href="/">
+      <Link href="/awesome">
         <Logo className="logo" />
       </Link>
     </footer>
