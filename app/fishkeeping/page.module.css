@@ -19,7 +19,7 @@
 @media screen and (max-width: 600px) {
   .gallery {
     width: 100%;
-    --gallery-columns: 1;
+    --gallery-columns: 2;
   }
 }
 
