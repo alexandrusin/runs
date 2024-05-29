@@ -257,3 +257,35 @@ a {
   color: #999;
   text-align: center;
 }
+
+.header {
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  width: 100%;
+  height: 54px;
+
+  gap: 20px;
+  text-transform: uppercase;
+  padding: 10px 0;
+  margin: 0 0 10px 0;
+  align-items: center;
+  justify-content: center;
+
+  inset: 0 0 auto;
+  z-index: 9;
+
+  border-bottom: 1px solid rgba(var(--callout-border-rgb), 0.25);
+  background-clip: padding-box;
+  backdrop-filter: blur(20px);
+  
+  a {
+    color: #CCC;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    &.active {
+      color: #FFF;
+      border-bottom: 1px solid #FFF;
+    }
+  }
+}
