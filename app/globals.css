@@ -289,3 +289,8 @@ a {
     }
   }
 }
+
+
+.awesome-page footer {
+  display: none;
+}

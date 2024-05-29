@@ -9,7 +9,3 @@
     font-size: 16px;
     min-height: calc(100dvh - var(--header-height) - var(--footer-height));
 }
-
-.awesome footer {
-  display: none;
-}
