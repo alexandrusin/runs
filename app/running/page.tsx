@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/utils/supabaseClient';
 
@@ -33,6 +33,7 @@ ChartJS.register(
 type RunningActivity = {
   start_date: string;
   distance: number;
+  total_elevation_gain: number; // Add elevation gain to the type
 };
 
 type AggregatedData = {
@@ -88,7 +89,6 @@ const chartOptions = {
   }
 };
 
-
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const RunningStats = () => {
@@ -98,6 +98,7 @@ const RunningStats = () => {
   const [actualMonthlyProgress, setActualMonthlyProgress] = useState<number[]>([]);
   const [cumulativeMonthlyProgress, setCumulativeMonthlyProgress] = useState<number[]>([]);
   const [progressDelta, setProgressDelta] = useState<number[]>([]);
+  const [monthlyElevationGain, setMonthlyElevationGain] = useState<number[]>([]); // New state for elevation gain
 
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -106,7 +107,6 @@ const RunningStats = () => {
 
   useEffect(() => {
     const fetchRunningData = async () => {
-
       setLoading(true);
       const startTime = Date.now();
       const minLoadingTime = 1000;
@@ -115,7 +115,7 @@ const RunningStats = () => {
       const currentMonth = new Date().getMonth();
       const { data, error } = await supabase
         .from('activities')
-        .select('start_date, distance')
+        .select('start_date, distance, total_elevation_gain')
         .eq('type', 'Run');
 
       if (error) {
@@ -140,17 +140,20 @@ const RunningStats = () => {
 
       // Calculate actual monthly progress for the current year
       const actualMonthlyProgress = new Array(12).fill(0); // Initialize an array for each month
+      const monthlyElevationGain = new Array(12).fill(0); // Initialize an array for each month
       data?.forEach(activity => {
         const activityDate = new Date(activity.start_date);
         if (activityDate.getFullYear() === currentYear) {
           const month = activityDate.getMonth(); // Get the month index (0-11)
           actualMonthlyProgress[month] += activity.distance / 1000; // Convert distance to kilometers and add to the respective month
+          monthlyElevationGain[month] += activity.total_elevation_gain; // Add elevation gain to the respective month
         }
       });
 
-      // Round the monthly distances to two decimal places
+      // Round the monthly distances and elevation gains to two decimal places
       for (let i = 0; i < actualMonthlyProgress.length; i++) {
         actualMonthlyProgress[i] = parseFloat(actualMonthlyProgress[i].toFixed(2));
+        monthlyElevationGain[i] = parseFloat(monthlyElevationGain[i].toFixed(2));
       }
 
       // After calculating the monthly distances
@@ -161,18 +164,13 @@ const RunningStats = () => {
         cumulativeTotal += actualMonthlyProgress[i];
         cumulativeMonthlyProgress.push(parseFloat(cumulativeTotal.toFixed(2))); // Add to the array
       }
-      
 
       const optimalPath = Array.from({ length: 12 }, (_, index) => (index + 1) * (yearlyGoal / 12)).map(distance => parseFloat(distance.toFixed(2)));
-   
 
-      // Here, you could set states related to the goal, optimal path, and current progress if needed
-      // setYearlyGoal(yearlyGoal);
-      // setOptimalPath(calculateOptimalPath(yearlyGoal));
-      // setCurrentProgress(calculateCurrentProgress());
       setOptimalPath(optimalPath);
       setActualMonthlyProgress(actualMonthlyProgress);
       setCumulativeMonthlyProgress(cumulativeMonthlyProgress);
+      setMonthlyElevationGain(monthlyElevationGain);
 
       // Calculate the difference between actual progress and the optimal path
       const progressDelta = cumulativeMonthlyProgress.map((cumulative, index) => {
@@ -234,7 +232,7 @@ const RunningStats = () => {
     ],
   };
 
-  const progressChartData: ChartData<"line", number[], string>  = {
+  const progressChartData: ChartData<"line", number[], string> = {
     labels: months,
     datasets: [
       {
@@ -258,7 +256,7 @@ const RunningStats = () => {
       }
     ],
   };
-  
+
   const progressChartOptions = {
     scales: {
       y: {
@@ -276,6 +274,40 @@ const RunningStats = () => {
       title: {
         display: true,
         text: 'Goal Progress (last year +10%)'
+      }
+    }
+  };
+
+  const elevationChartData: ChartData<"line", number[], string> = {
+    labels: months,
+    datasets: [
+      {
+        label: 'Total Elevation Gain',
+        data: monthlyElevationGain,
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgb(129, 87, 255)',
+        borderWidth: 2
+      }
+    ]
+  };
+
+  const elevationChartOptions = {
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Elevation Gain (m) / Distance (km)'
+        }
+      }
+    },
+    plugins: {
+      legend: {
+        display: true,
+      },
+      title: {
+        display: true,
+        text: 'Moar Trails Please'
       }
     }
   };
@@ -316,6 +348,22 @@ const RunningStats = () => {
         ))}
       </div>
 
+
+      <Line options={elevationChartOptions} data={elevationChartData} />
+
+      <div className="grid-container">
+        <div className="grid-header">Month</div>
+        <div className="grid-header">Total Elevation Gain (m)</div>
+        <div className="grid-header">Total Distance (km)</div>
+        {monthlyElevationGain.map((gain, index) => (
+          <React.Fragment key={index}>
+            <div className="grid-item">{months[index]}</div>
+            <div className="grid-item">{gain}</div>
+            <div className="grid-item">{actualMonthlyProgress[index]}</div>
+          </React.Fragment>
+        ))}
+      </div>
+
       <div className="badges-wrapper">
         <Badge
           image="/badges/badge-ecotrail-2023.png"
@@ -323,23 +371,22 @@ const RunningStats = () => {
           distance="50km"
           time="06:56:17"
           elevation="1,580m"
-          />
+        />
         <Badge
           image="/badges/badge-wizz-2023.png"
           title="WIZZ Cluj Marathon 2023"
           distance="42.2km"
           time="04:02:25"
           elevation="98m"
-          />
+        />
         <Badge
           image="/badges/badge-wizz-2022.png"
           title="WIZZ Cluj Marathon 2022"
           distance="42.2km"
           time="04:05:57"
           elevation="98m"
-          />
+        />
       </div>
-
     </main>
   );
 };
